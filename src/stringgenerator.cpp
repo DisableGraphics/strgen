@@ -36,6 +36,11 @@ std::string StringGenerator::generate(const std::vector<std::shared_ptr<FileNode
 }
 
 bool StringGenerator::evaluateConditions(const std::vector<std::shared_ptr<ConditionNode>>& conditions, const std::string& finalString, const std::unordered_map<std::string, std::string> &selected_lines, std::string &prev_line) {
+    // Preallocate for random conditions (TOKEN_MAYBE)
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0,1);
+
     bool eval = true;
     for (const auto& condition : conditions) {
         if(!eval && condition->type == TOKEN_OR) {
@@ -50,6 +55,11 @@ bool StringGenerator::evaluateConditions(const std::vector<std::shared_ptr<Condi
             eval = selected_lines.contains(condition->condition);
             if(eval)
                 prev_line = selected_lines.at(condition->condition);
+        } else if(condition->type == TOKEN_MAYBE) {
+            bool found = selected_lines.contains(condition->condition);
+            if(found) {
+                eval = static_cast<bool>(dist(rng));
+            }
         }
     }
     return eval;

@@ -25,20 +25,26 @@ std::shared_ptr<FileNode> Parser::parseFile(const std::string& filename) {
 
     while (std::getline(file, line)) {
         line = trim(line);
+        // Ignore empty lines or lines with comments
         if (line.empty()) continue;
         if (line[0] == TOKEN_COMMENT) continue;
 
         if (parsingConditions) {
-            if (line[0] == TOKEN_AND || line[0] == TOKEN_OR || line[0] == TOKEN_MAYBE) {
-                fileNode->addCondition(std::make_shared<ConditionNode>(line.substr(1), line[0]));
-            } else if(line[0] == TOKEN_PREFIX) {
-                fileNode->prefix = line.substr(1);
-            } else if(line[0] == TOKEN_POSTFIX) {
-                fileNode->postfix = line.substr(1);
-            } else if(line[0] == TOKEN_EQUALS) {
-                fileNode->addCondition(std::make_shared<ConditionNode>(line.substr(1), line[0]));
-            } else {
-                parsingConditions = false;
+            switch(line[0]) {
+                case TOKEN_AND:
+                case TOKEN_OR:
+                case TOKEN_MAYBE:
+                case TOKEN_EQUALS:
+                    fileNode->addCondition(std::make_shared<ConditionNode>(line.substr(1), line[0]));
+                    break;
+                case TOKEN_PREFIX:
+                    fileNode->prefix = line.substr(1);
+                    break;
+                case TOKEN_POSTFIX:
+                    fileNode->postfix = line.substr(1);
+                    break;
+                default:
+                    parsingConditions = false;
             }
         }
 
