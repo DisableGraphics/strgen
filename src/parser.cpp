@@ -35,6 +35,7 @@ std::shared_ptr<FileNode> Parser::parseFile(const std::string& filename) {
                 case TOKEN_OR:
                 case TOKEN_MAYBE:
 				case TOKEN_CONDADD:
+				case TOKEN_NOT:
                 case TOKEN_EQUALS:
                     fileNode->addCondition(std::make_shared<ConditionNode>(line.substr(1), line[0]));
                     break;

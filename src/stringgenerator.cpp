@@ -51,6 +51,10 @@ bool StringGenerator::evaluateConditions(const std::vector<std::shared_ptr<Condi
             auto find = finalString.find(condition->condition);
             if(find == std::string::npos)
                 eval = false;
+        } else if(eval && condition->type == TOKEN_NOT) {
+            auto find = finalString.find(condition->condition);
+            if(find == std::string::npos)
+                eval = true;
         } else if(condition->type == TOKEN_EQUALS) {
             eval = selected_lines.contains(condition->condition);
             if(eval)
